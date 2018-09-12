@@ -155,7 +155,8 @@ def matrixPlotter(DRUG1, DRUG2, DRUG, yminF=0, ymaxF=3.4, mod=None, Ap=10, S0=No
                     SN = np.array(S0) * DRUG2.tMat**NB * DRUG.tMat**100
                 elif NB == 0:
                     SN = np.array(S0) * DRUG1.tMat**NA * DRUG.tMat**100
-                # SN = np.array(S0) * DRUG1.tMat**NA * DRUG2.tMat**NB * DRUG.tMat**100
+                else:
+                    SN = np.array(S0) * DRUG1.tMat**NA * DRUG2.tMat**NB * DRUG.tMat**100
                 AvgFit = np.dot(np.array(SN[0,:]), DRUG.Fit)
                 avgMat[NA, NB] = AvgFit
     if mod == 1:

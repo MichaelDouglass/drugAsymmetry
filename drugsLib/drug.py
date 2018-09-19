@@ -35,7 +35,15 @@ def hamDist(Si, Sj):
 def csvExplore(Drug1, Drug2, Drug3, f0=None, f1=None, finf=None, cols=None):
     """Used to show all data from given csv file_extension
 
+    Shows 3x3 plot of steering drug inputs
+    Columns are the amount of times the third drug is Applied
+    (0 Times, 1 Time, Infinite Times)
+    Rows are lowest fitness achieved, rho, and Theta
+
     Args:
+        Drug1 (drug class): First steering drug
+        Drug2 (drug class): Second steering drug
+        Drug3 (drug class): Final drug
     Returns:
     """
     nameD1 = Drug1.name
@@ -125,7 +133,14 @@ def csvExplore(Drug1, Drug2, Drug3, f0=None, f1=None, finf=None, cols=None):
 
 
 def matrixPlotter(DRUG1, DRUG2, DRUG, yminF=0, ymaxF=3.4, mod=None, Ap=10, S0=None, states=None):
+    """Used to show plot fitness values as a matrix when drug sequence applied
 
+    Args:
+        DRUG1 (drug class): First steering drug
+        DRUG2 (drug class): Second steering drug
+        DRUG (drug class): Final drug
+    Returns:
+    """
     if states == None:
         states = statesFromBits(16, 4)
     else:

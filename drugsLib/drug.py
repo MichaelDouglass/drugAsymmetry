@@ -31,6 +31,14 @@ def hamDist(Si, Sj):
     """
     return sum(ei != ej for ei, ej in zip(Si, Sj))
 
+def whatsInf(T):
+    c = 0
+    P = np.ones(np.size(T))
+    while not np.array_equal(P, T):
+        P = T
+        T = T*T
+        c = c + 1
+    return [P, c]
 
 def csvExplore(Drug1, Drug2, Drug3, f0=None, f1=None, finf=None, cols=None):
     """Used to show all data from given csv file_extension
@@ -243,3 +251,6 @@ class Drug:
 
         self.tMat = np.matrix(P)
         self.LFPf = self.Fit[int(self.LFP, 2)]
+        PC = whatsInf(self.tMat)
+        self.infMat = PC[0]
+        self.infCount = PC[1]

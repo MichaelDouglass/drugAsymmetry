@@ -209,7 +209,7 @@ class Drug:
                       peak.
         R (float): biasing variable described in Markov model
     Attributes:
-        LPFf (float): fitness value of LPF states
+        LFPf (float): fitness value of LPF states
         tMat(matrix): probability matrix from markov model of dimensions
                       [states x states]
     """
@@ -242,4 +242,4 @@ class Drug:
                 P[p, p]=1
 
         self.tMat = np.matrix(P)
-        self.LPFf = self.Fit[int(self.LFP, 2)]
+        self.LFPf = self.Fit[int(self.LFP, 2)]

@@ -202,7 +202,7 @@ def matrixPlotter(DRUG1, DRUG2, DRUG, yminF=0, ymaxF=3.4, mod=None, Ap=10, S0=No
     Z = ax.matshow(avgMat, cmap=cmap, norm=norm)
     ax.set_xlabel(DRUG1.name + ' Applied Second N Times')
     ax.set_ylabel(DRUG2.name + ' Applied First N Times')
-    ax.set_title('Average Fitness <f> for ' + DRUG.name)
+    ax.set_title('Average Fitness <f> for ' + DRUG.name + ' at R = '+str(DRUG.R))
     plt.colorbar(Z)
     plt.tight_layout()
 
@@ -260,12 +260,13 @@ def avgFitAnimator(DRUG1, DRUG2, DRUG, R, yminF=0, ymaxF=3.4, mod=None, Ap=10, S
         mat = plt.matshow(avgMat, cmap=cmap, norm=norm, fignum=0, animated=True)
         # plt.set_xlabel(DRUG1.name + ' Applied Second N Times')
         # plt.set_ylabel(DRUG2.name + ' Applied First N Times')
-        plt.suptitle('Average Fitness <f> for ' + DRUG.name + 'R-Value = '+str(r))
+        plt.suptitle('Average Fitness <f> for ' + DRUG.name + 'R-Value = '+str(R[0])+' to '+str(r))
         # plt.colorbar(mat)
         ims.append([mat])
-    ani = animation.ArtistAnimation(figs, ims, interval=200, blit=True,
-                                    repeat_delay=1000)
+    ani = animation.ArtistAnimation(figs, ims, interval=1000, blit=True,
+                                    repeat_delay=5000)
     ani.save('animations/test.gif', writer='imagemagick')
+    plt.close()
 
 class Drug:
     """ Drug class main takes fitness landscape and returns probability matrix.

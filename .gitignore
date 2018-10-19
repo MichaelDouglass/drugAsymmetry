@@ -2,3 +2,5 @@
 *.csv
 __pycache__
 Plots
+Archive
+animations

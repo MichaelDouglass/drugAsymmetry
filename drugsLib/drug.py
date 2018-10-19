@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import matplotlib as mpl
+import os
 
 def statesFromBits(bit, N):
     """Creates binary strings from number input
@@ -205,6 +207,66 @@ def matrixPlotter(DRUG1, DRUG2, DRUG, yminF=0, ymaxF=3.4, mod=None, Ap=10, S0=No
     plt.tight_layout()
 
 
+def avgFitAnimator(DRUG1, DRUG2, DRUG, R, yminF=0, ymaxF=3.4, mod=None, Ap=10, S0=None, states=None):
+    """
+    """
+    if not os.path.exists('animations'):
+        os.mkdir('animations')
+
+    if states == None:
+        states = statesFromBits(16, 4)
+    else:
+        states = states
+
+    if S0 == None:
+        S0 = np.array(np.ones(len(states))/2**4)
+    else:
+        S0 = S0
+
+    cmap = plt.cm.inferno
+    norm = mpl.colors.BoundaryNorm(np.arange(yminF,ymaxF,0.01), cmap.N)
+
+    avgMat = np.zeros([Ap+1, Ap+1])
+
+    figs = plt.figure(num=0)
+    ims = []
+    for r in R:
+        DRUG1.R = r
+        DRUG1.redoMat()
+        DRUG2.R = r
+        DRUG2.redoMat()
+        DRUG.R = r
+        DRUG.redoMat()
+
+        if mod == None:
+            for NA in range(0,Ap+1):
+                for NB in range(0,Ap+1):
+                    SN = np.array(S0) * DRUG1.tMat**NA * DRUG2.tMat**NB * DRUG.infMat
+                    AvgFit = np.dot(np.array(SN[0,:]), DRUG.Fit)
+                    avgMat[NA, NB] = AvgFit
+        if mod == 1:
+            for NA in range(0,Ap+1):
+                for NB in range(0,Ap+1):
+                    SN = np.array(S0) * DRUG1.tMat**NA * DRUG2.tMat**NB * DRUG.tMat**1
+                    AvgFit = np.dot(np.array(SN[0,:]), DRUG.Fit)
+                    avgMat[NA, NB] = AvgFit
+        if mod == 0:
+            for NA in range(0,Ap+1):
+                for NB in range(0,Ap+1):
+                    SN = np.array(S0) * DRUG1.tMat**NA * DRUG2.tMat**NB
+                    AvgFit = np.dot(np.array(SN[0,:]), DRUG.Fit)
+                    avgMat[NA, NB] = AvgFit
+
+        mat = plt.matshow(avgMat, cmap=cmap, norm=norm, fignum=0, animated=True)
+        # plt.set_xlabel(DRUG1.name + ' Applied Second N Times')
+        # plt.set_ylabel(DRUG2.name + ' Applied First N Times')
+        plt.suptitle('Average Fitness <f> for ' + DRUG.name + 'R-Value = '+str(r))
+        # plt.colorbar(mat)
+        ims.append([mat])
+    ani = animation.ArtistAnimation(figs, ims, interval=200, blit=True,
+                                    repeat_delay=1000)
+    ani.save('animations/test.gif', writer='imagemagick')
+
 class Drug:
     """ Drug class main takes fitness landscape and returns probability matrix.
 
@@ -254,3 +316,26 @@ class Drug:
         PC = whatsInf(self.tMat)
         self.infMat = PC[0]
         self.infCount = PC[1]
+    def redoMat(self):
+        R = self.R
+        P = np.zeros([len(self.states),len(self.states)])
+
+        for i in range(len(self.states)):
+            for j in range(len(self.states)):
+                if self.Fit[j] >= self.Fit[i] and hamDist(self.states[i], self.states[j]) == 1:
+                    P[i, j] = (self.Fit[j] - self.Fit[i])**R
+                    d = 0
+                    for s in range(len(self.states)):
+                        if hamDist(self.states[i], self.states[s]) == 1 and self.Fit[s] > self.Fit[i]:
+                            d = d + (self.Fit[s] - self.Fit[i])**R
+                    P[i, j] = P[i, j]/d
+
+
+        # if there is no probability to reach any other state,
+        # there is 100% probability to remain in the initial state.
+        for p in range(len(P)):
+            spots = np.where(P[p] != 0)
+            if len(spots[0])==0:
+                P[p, p]=1
+
+        self.tMat = np.matrix(P)
